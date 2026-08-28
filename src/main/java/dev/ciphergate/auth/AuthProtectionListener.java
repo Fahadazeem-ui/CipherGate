@@ -189,7 +189,7 @@ public final class AuthProtectionListener implements Listener {
 
     @EventHandler
     public void onInventoryOpen(final InventoryOpenEvent event) {
-        if (pending(event.getPlayer()) && !gate.handles(event.getInventory())) {
+        if (event.getPlayer() instanceof Player player && pending(player) && !gate.handles(event.getInventory())) {
             event.setCancelled(true);
         }
     }
@@ -198,7 +198,7 @@ public final class AuthProtectionListener implements Listener {
     public void onInventoryClick(final InventoryClickEvent event) {
         if (gate.handles(event.getView().getTopInventory())) {
             gate.click(event);
-        } else if (pending((Player) event.getWhoClicked())) {
+        } else if (event.getWhoClicked() instanceof Player player && pending(player)) {
             event.setCancelled(true);
         }
     }
@@ -207,7 +207,7 @@ public final class AuthProtectionListener implements Listener {
     public void onInventoryDrag(final InventoryDragEvent event) {
         if (gate.handles(event.getView().getTopInventory())) {
             gate.drag(event);
-        } else if (pending((Player) event.getWhoClicked())) {
+        } else if (event.getWhoClicked() instanceof Player player && pending(player)) {
             event.setCancelled(true);
         }
     }
