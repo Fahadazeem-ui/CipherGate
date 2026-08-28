@@ -1,0 +1,18 @@
+# Build outputs
+target/
+
+# IDE files
+.idea/
+*.iml
+.project
+.classpath
+.settings/
+
+# Local server and plugin data
+run/
+plugins/CipherGate/
+accounts.yml
+
+# OS files
+.DS_Store
+Thumbs.db

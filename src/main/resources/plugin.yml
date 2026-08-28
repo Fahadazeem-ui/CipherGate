@@ -1,0 +1,32 @@
+name: CipherGate
+version: '${project.version}'
+main: dev.ciphergate.auth.CipherGatePlugin
+api-version: '1.21.11'
+description: A privacy-first authentication gate for Paper servers.
+authors: [CipherGate]
+
+commands:
+  login:
+    description: Authenticate with CipherGate.
+    usage: /login <password>
+    aliases: [l]
+  register:
+    description: Create a CipherGate account.
+    usage: /register <password> <confirm>
+    aliases: [reg]
+  gate:
+    description: Open the CipherGate secure-entry menu.
+    usage: /gate
+    aliases: [cg]
+  ciphergate:
+    description: CipherGate administration.
+    usage: /ciphergate <status|reload|unlock>
+    aliases: [cga]
+
+permissions:
+  ciphergate.use:
+    description: Lets a player use CipherGate authentication commands.
+    default: true
+  ciphergate.admin:
+    description: Lets an administrator use CipherGate administration commands.
+    default: op

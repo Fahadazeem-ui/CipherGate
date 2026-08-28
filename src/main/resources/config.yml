@@ -1,0 +1,36 @@
+# CipherGate 1.0.0
+# Never publish this file if you place a pepper in it. Prefer an environment
+# variable (CIPHERGATE_PEPPER) or JVM property (-Dciphergate.pepper=...) instead.
+
+authentication:
+  allow-registration: true
+  timeout-seconds: 90
+  max-failed-attempts: 5
+  lockout-minutes: 10
+
+passwords:
+  minimum-length: 10
+  maximum-length: 128
+  require-uppercase: true
+  require-lowercase: true
+  require-digit: true
+  require-symbol: false
+  # PBKDF2 settings are embedded in every stored hash. Raising iterations later
+  # upgrades a password automatically after its next successful login.
+  pbkdf2-iterations: 310000
+  salt-bytes: 24
+  hash-bits: 512
+
+security:
+  # Optional. Blank means no pepper. Environment and JVM values take precedence.
+  # Use a long random secret that is stored outside this config file.
+  pepper: ''
+  # Do not let unauthenticated players communicate or interact with the server.
+  block-chat-before-login: true
+  # Show the optional anvil-based gate menu on first join. It avoids placing the
+  # password in a chat message; the input is cleared as soon as it is submitted.
+  show-gate-on-join: true
+
+messages:
+  # Keep login failures generic. This makes account probing less useful.
+  generic-login-failure: '&cAuthentication failed. Check your credentials and try again.'
