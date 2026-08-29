@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.2
+
+- Fixed the Cipher Gate anvil submission button so clients can click and submit it.
+- Renamed the gate actions to Login, Register, and Change Password.
+- Added a three-step password-change flow that requires the current password, then a new password and confirmation.
+
 ## 1.0.1
 
 - Relaxed the default password policy: passwords need only be 6 characters or longer.

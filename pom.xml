@@ -6,7 +6,7 @@
 
     <groupId>dev.ciphergate</groupId>
     <artifactId>ciphergate</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <name>CipherGate</name>
     <description>Privacy-first login security for Paper.</description>
 

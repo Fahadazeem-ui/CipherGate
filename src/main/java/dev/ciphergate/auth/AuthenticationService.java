@@ -7,6 +7,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 /**
  * Performs deliberately expensive password work off the server thread. The
@@ -58,6 +59,80 @@ public final class AuthenticationService {
             return;
         }
         registerAsync(ticket, password);
+    }
+
+    /**
+     * Confirms the existing password before a change is allowed. Failed checks
+     * count toward the same persistent lockout policy as ordinary login attempts.
+     */
+    public void verifyCurrentPassword(
+            final Player player,
+            final char[] password,
+            final Consumer<PasswordCheck> completion
+    ) {
+        final UUID uuid = player.getUniqueId();
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            PasswordCheck outcome = PasswordCheck.INVALID;
+            try {
+                final long now = System.currentTimeMillis();
+                final Account account = accounts.find(uuid);
+                if (account == null) {
+                    outcome = PasswordCheck.ERROR;
+                } else if (account.isLocked(now)) {
+                    outcome = PasswordCheck.LOCKED;
+                } else if (hasher.verify(password, account.passwordHash()).valid()) {
+                    outcome = PasswordCheck.VERIFIED;
+                } else {
+                    final Account updated = accounts.recordFailure(uuid, now, settings);
+                    outcome = updated != null && updated.isLocked(now) ? PasswordCheck.LOCKED : PasswordCheck.INVALID;
+                }
+            } catch (final GeneralSecurityException exception) {
+                plugin.getLogger().warning("CipherGate could not verify the current password: "
+                        + exception.getClass().getSimpleName());
+                outcome = PasswordCheck.ERROR;
+            } finally {
+                Arrays.fill(password, '\0');
+            }
+            final PasswordCheck result = outcome;
+            Bukkit.getScheduler().runTask(plugin, () -> completion.accept(result));
+        });
+    }
+
+    /** Replaces a password after GateMenu has verified the current password. */
+    public void changePassword(
+            final Player player,
+            final char[] password,
+            final Consumer<PasswordUpdate> completion
+    ) {
+        final UUID uuid = player.getUniqueId();
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            PasswordUpdate outcome = PasswordUpdate.ERROR;
+            try {
+                final Account account = accounts.find(uuid);
+                final long now = System.currentTimeMillis();
+                if (account == null) {
+                    outcome = PasswordUpdate.ERROR;
+                } else if (account.isLocked(now)) {
+                    outcome = PasswordUpdate.LOCKED;
+                } else {
+                    final String replacement = hasher.hash(password);
+                    accounts.recordSuccess(uuid, replacement, now);
+                    outcome = PasswordUpdate.UPDATED;
+                }
+            } catch (final GeneralSecurityException exception) {
+                plugin.getLogger().warning("CipherGate could not update a password: "
+                        + exception.getClass().getSimpleName());
+            } finally {
+                Arrays.fill(password, '\0');
+            }
+            final PasswordUpdate result = outcome;
+            Bukkit.getScheduler().runTask(plugin, () -> {
+                if (result == PasswordUpdate.UPDATED) {
+                    sessions.passwordChanged(uuid);
+                }
+                completion.accept(result);
+            });
+        });
     }
 
     private void authenticateAsync(final SessionGuard.Ticket ticket, final char[] password) {
@@ -128,5 +203,18 @@ public final class AuthenticationService {
                 }
             });
         });
+    }
+
+    public enum PasswordCheck {
+        VERIFIED,
+        INVALID,
+        LOCKED,
+        ERROR
+    }
+
+    public enum PasswordUpdate {
+        UPDATED,
+        LOCKED,
+        ERROR
     }
 }

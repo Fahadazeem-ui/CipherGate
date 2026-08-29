@@ -34,7 +34,7 @@ Paper lists Java 21 as the recommended Java version for Paper 1.20 through 1.21.
 
 ## Install
 
-1. Download or build CipherGate-1.0.1.jar.
+1. Download or build CipherGate-1.0.2.jar.
 2. Put it in your server's plugins/ directory.
 3. Start Paper once to create plugins/CipherGate/config.yml.
 4. Set a high-entropy pepper outside the plugin config:
@@ -48,8 +48,9 @@ Do not change a live pepper casually: existing password hashes use it, so changi
 
 On first join, CipherGate opens a small gate menu:
 
-- **Unlock identity** opens the secure-entry screen for an existing account.
-- **Create identity** starts a two-step password registration flow.
+- **Login** opens the secure-entry screen for an existing account.
+- **Register** starts a two-step password registration flow for a new account.
+- **Change Password** replaces Register after account creation and requires the current password first.
 - **Security status** shows the active authentication policy.
 
 Players can also use:
@@ -111,7 +112,7 @@ It never contains a plaintext password, a reversible encrypted password, an IP a
 
     mvn --batch-mode package
 
-The resulting JAR is written to target/CipherGate-1.0.1.jar. The GitHub Actions workflow verifies the same Maven build on Java 21.
+The resulting JAR is written to target/CipherGate-1.0.2.jar. The GitHub Actions workflow verifies the same Maven build on Java 21.
 
 ## Security notes
 

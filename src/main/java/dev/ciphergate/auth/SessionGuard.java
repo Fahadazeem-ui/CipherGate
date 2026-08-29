@@ -108,6 +108,26 @@ public final class SessionGuard {
                 .append(Component.text("CipherGate accepted your identity.", NamedTextColor.GREEN)));
     }
 
+    /** Marks a player as verified after the old password was confirmed and replaced. */
+    public void passwordChanged(final UUID uuid) {
+        final Session session = sessions.get(uuid);
+        if (session == null) {
+            return;
+        }
+        session.phase = Phase.AUTHENTICATED;
+        final Player player = Bukkit.getPlayer(uuid);
+        if (player == null || !player.isOnline()) {
+            return;
+        }
+        player.showTitle(Title.title(
+                Component.text("PASSWORD UPDATED", NamedTextColor.AQUA),
+                Component.text("Your identity is secured with the new password.", NamedTextColor.GRAY),
+                Title.Times.times(Duration.ofMillis(250), Duration.ofMillis(1_750), Duration.ofMillis(500))
+        ));
+        player.sendMessage(Component.text("◆ ", NamedTextColor.DARK_AQUA)
+                .append(Component.text("Password changed successfully.", NamedTextColor.GREEN)));
+    }
+
     public void authenticationFailed(final Ticket ticket, final Failure failure) {
         final Session session = sessions.get(ticket.uuid());
         if (session == null || session.ticket != ticket.value() || session.phase != Phase.VERIFYING) {
