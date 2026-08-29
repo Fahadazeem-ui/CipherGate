@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.1
+
+- Relaxed the default password policy: passwords need only be 6 characters or longer.
+- Uppercase letters, lowercase letters, digits, and symbols are all optional.
+
 ## 1.0.0
 
 - Initial Paper 1.21.11 release.

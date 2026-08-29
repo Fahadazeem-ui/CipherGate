@@ -9,11 +9,11 @@ authentication:
   lockout-minutes: 10
 
 passwords:
-  minimum-length: 10
+  minimum-length: 6
   maximum-length: 128
-  require-uppercase: true
-  require-lowercase: true
-  require-digit: true
+  require-uppercase: false
+  require-lowercase: false
+  require-digit: false
   require-symbol: false
   # PBKDF2 settings are embedded in every stored hash. Raising iterations later
   # upgrades a password automatically after its next successful login.

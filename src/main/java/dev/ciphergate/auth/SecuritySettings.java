@@ -33,7 +33,7 @@ public record SecuritySettings(
         final String pepper = !propertyPepper.isBlank() ? propertyPepper
                 : (!environmentPepper.isBlank() ? environmentPepper : configuredPepper);
 
-        final int minimumLength = between(config.getInt("passwords.minimum-length", 10), 8, 128);
+        final int minimumLength = between(config.getInt("passwords.minimum-length", 6), 6, 128);
         final int maximumLength = between(config.getInt("passwords.maximum-length", 128), minimumLength, 256);
 
         return new SecuritySettings(

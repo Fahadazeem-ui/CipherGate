@@ -9,6 +9,7 @@ Players arrive at a small **Cipher Gate**: a polished in-game menu with a secure
 ## Highlights
 
 - PBKDF2-HMAC-SHA512 password hashes with a unique 24-byte salt and 310,000 iterations by default
+- Flexible default passwords: only 6 characters are required; character types are optional
 - Versioned hash format with automatic cost upgrades after a successful login
 - Optional server-side **pepper**, loaded from an environment variable or JVM property rather than committed to config
 - Constant-time hash and confirmation comparisons
@@ -33,7 +34,7 @@ Paper lists Java 21 as the recommended Java version for Paper 1.20 through 1.21.
 
 ## Install
 
-1. Download or build CipherGate-1.0.0.jar.
+1. Download or build CipherGate-1.0.1.jar.
 2. Put it in your server's plugins/ directory.
 3. Start Paper once to create plugins/CipherGate/config.yml.
 4. Set a high-entropy pepper outside the plugin config:
@@ -82,10 +83,10 @@ The generated config.yml is fully annotated. The high-impact settings are:
       lockout-minutes: 10
 
     passwords:
-      minimum-length: 10
-      require-uppercase: true
-      require-lowercase: true
-      require-digit: true
+      minimum-length: 6
+      require-uppercase: false
+      require-lowercase: false
+      require-digit: false
       pbkdf2-iterations: 310000
 
     security:
@@ -110,7 +111,7 @@ It never contains a plaintext password, a reversible encrypted password, an IP a
 
     mvn --batch-mode package
 
-The resulting JAR is written to target/CipherGate-1.0.0.jar. The GitHub Actions workflow verifies the same Maven build on Java 21.
+The resulting JAR is written to target/CipherGate-1.0.1.jar. The GitHub Actions workflow verifies the same Maven build on Java 21.
 
 ## Security notes
 
