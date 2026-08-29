@@ -90,6 +90,7 @@ public final class AuthProtectionListener implements Listener {
         final int space = message.indexOf(' ');
         final String root = (space == -1 ? message : message.substring(0, space)).toLowerCase(Locale.ROOT);
         if (root.equals("login") || root.equals("l") || root.equals("register") || root.equals("reg")
+                || root.equals("changepassword") || root.equals("changepass") || root.equals("cpass")
                 || root.equals("gate") || root.equals("cg") || root.equals("ciphergate") || root.equals("cga")) {
             return;
         }

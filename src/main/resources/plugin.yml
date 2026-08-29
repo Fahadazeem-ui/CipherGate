@@ -14,8 +14,12 @@ commands:
     description: Create a CipherGate account.
     usage: /register <password> <confirm>
     aliases: [reg]
+  changepassword:
+    description: Change a CipherGate password after confirming the old one.
+    usage: /changepassword <old> <new> <confirm>
+    aliases: [changepass, cpass]
   gate:
-    description: Open the CipherGate secure-entry menu.
+    description: Show the correct CipherGate command for your account state.
     usage: /gate
     aliases: [cg]
   ciphergate:

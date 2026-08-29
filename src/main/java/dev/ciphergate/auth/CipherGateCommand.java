@@ -32,6 +32,7 @@ public final class CipherGateCommand implements CommandExecutor, TabCompleter {
         return switch (command.getName().toLowerCase(Locale.ROOT)) {
             case "login" -> login(sender, args);
             case "register" -> register(sender, args);
+            case "changepassword" -> changePassword(sender, args);
             case "gate" -> gate(sender);
             case "ciphergate" -> admin(sender, args);
             default -> false;
@@ -60,7 +61,7 @@ public final class CipherGateCommand implements CommandExecutor, TabCompleter {
         }
         if (args.length != 2) {
             player.sendMessage(Component.text("Usage: /register <password> <confirm>", NamedTextColor.RED));
-            player.sendMessage(Component.text("For passwords containing spaces, use /gate instead.", NamedTextColor.GRAY));
+            player.sendMessage(Component.text("Passwords cannot contain spaces when using this command.", NamedTextColor.GRAY));
             return true;
         }
         final char[] password = args[0].toCharArray();
@@ -79,6 +80,66 @@ public final class CipherGateCommand implements CommandExecutor, TabCompleter {
             return true;
         }
         plugin.authentication().register(player, password);
+        return true;
+    }
+
+    private boolean changePassword(final CommandSender sender, final String[] args) {
+        final Player player = playerOnly(sender);
+        if (player == null) {
+            return true;
+        }
+        if (args.length != 3) {
+            player.sendMessage(Component.text("Usage: /changepassword <old> <new> <confirm>", NamedTextColor.RED));
+            player.sendMessage(Component.text("Passwords cannot contain spaces when using this command.", NamedTextColor.GRAY));
+            return true;
+        }
+        if (!plugin.accounts().contains(player.getUniqueId())) {
+            player.sendMessage(Component.text("Register an account before changing its password.", NamedTextColor.RED));
+            return true;
+        }
+
+        final char[] oldPassword = args[0].toCharArray();
+        final char[] newPassword = args[1].toCharArray();
+        final char[] confirmation = args[2].toCharArray();
+        if (!constantTimeEquals(newPassword, confirmation)) {
+            Arrays.fill(oldPassword, '\0');
+            Arrays.fill(newPassword, '\0');
+            Arrays.fill(confirmation, '\0');
+            player.sendMessage(Component.text("New passwords did not match.", NamedTextColor.RED));
+            return true;
+        }
+        Arrays.fill(confirmation, '\0');
+        final String violation = PasswordPolicy.violation(newPassword, plugin.settings());
+        if (violation != null) {
+            Arrays.fill(oldPassword, '\0');
+            Arrays.fill(newPassword, '\0');
+            player.sendMessage(Component.text(violation, NamedTextColor.RED));
+            return true;
+        }
+
+        plugin.authentication().verifyCurrentPassword(player, oldPassword, check -> {
+            if (!player.isOnline()) {
+                Arrays.fill(newPassword, '\0');
+                return;
+            }
+            if (check == AuthenticationService.PasswordCheck.VERIFIED) {
+                plugin.authentication().changePassword(player, newPassword, update -> {
+                    if (!player.isOnline() || update == AuthenticationService.PasswordUpdate.UPDATED) {
+                        return;
+                    }
+                    player.sendMessage(Component.text(update == AuthenticationService.PasswordUpdate.LOCKED
+                            ? "Your account is temporarily locked."
+                            : "CipherGate could not update your password. Try again.", NamedTextColor.RED));
+                });
+            } else {
+                Arrays.fill(newPassword, '\0');
+                player.sendMessage(Component.text(check == AuthenticationService.PasswordCheck.LOCKED
+                        ? "Too many failed attempts. Your account is temporarily locked."
+                        : (check == AuthenticationService.PasswordCheck.ERROR
+                        ? "CipherGate could not verify your current password. Try again."
+                        : "Current password was incorrect."), NamedTextColor.RED));
+            }
+        });
         return true;
     }
 

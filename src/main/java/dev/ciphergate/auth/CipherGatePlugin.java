@@ -25,6 +25,7 @@ public final class CipherGatePlugin extends JavaPlugin {
         final CipherGateCommand commands = new CipherGateCommand(this);
         registerCommand("login", commands);
         registerCommand("register", commands);
+        registerCommand("changepassword", commands);
         registerCommand("gate", commands);
         registerCommand("ciphergate", commands);
         getServer().getPluginManager().registerEvents(new AuthProtectionListener(this, sessions, gate), this);

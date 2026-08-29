@@ -188,17 +188,13 @@ public final class SessionGuard {
         player.sendMessage(Component.text("◆ CIPHER GATE ", NamedTextColor.AQUA)
                 .append(Component.text("Use ", NamedTextColor.GRAY))
                 .append(Component.text("/login <password>", NamedTextColor.WHITE))
-                .append(Component.text(" or ", NamedTextColor.GRAY))
-                .append(Component.text("/gate", NamedTextColor.WHITE))
-                .append(Component.text(" for secure entry.", NamedTextColor.GRAY)));
+                .append(Component.text(" to authenticate.", NamedTextColor.GRAY)));
     }
 
     public void registrationPrompt(final Player player) {
         player.sendMessage(Component.text("◆ CIPHER GATE ", NamedTextColor.AQUA)
                 .append(Component.text("Create your identity with ", NamedTextColor.GRAY))
                 .append(Component.text("/register <password> <confirm>", NamedTextColor.WHITE))
-                .append(Component.text(" or open ", NamedTextColor.GRAY))
-                .append(Component.text("/gate", NamedTextColor.WHITE))
                 .append(Component.text(".", NamedTextColor.GRAY)));
     }
 

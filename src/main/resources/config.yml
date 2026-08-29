@@ -27,9 +27,9 @@ security:
   pepper: ''
   # Do not let unauthenticated players communicate or interact with the server.
   block-chat-before-login: true
-  # Show the optional anvil-based gate menu on first join. It avoids placing the
-  # password in a chat message; the input is cleared as soon as it is submitted.
-  show-gate-on-join: true
+  # The old anvil gate was intentionally removed: it could charge XP and was
+  # inconsistent across clients. /gate now only shows the correct command.
+  show-gate-on-join: false
 
 messages:
   # Keep login failures generic. This makes account probing less useful.

@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.3
+
+- Removed the unreliable anvil password interface, including its XP cost.
+- Added the reliable /changepassword <old> <new> <confirm> command.
+
 ## 1.0.2
 
 - Fixed the Cipher Gate anvil submission button so clients can click and submit it.

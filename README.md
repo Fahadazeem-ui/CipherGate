@@ -19,7 +19,7 @@ Players arrive at a small **Cipher Gate**: a polished in-game menu with a secure
 - A pre-auth sandbox blocks movement, chat, commands, damage, inventory access, interactions, item use, drops, pickups, attacks, and projectiles
 - 90-second authentication deadline (configurable)
 - UUID-only storage: no player name history, IP history, or plaintext passwords
-- An optional /gate UI using an anvil entry field, which keeps the password out of chat messages and clears the temporary inventory after submission
+- Clear command-based login, registration, and old-password-confirmed password changes; no XP-costing anvil UI
 
 ## Compatibility
 
@@ -34,7 +34,7 @@ Paper lists Java 21 as the recommended Java version for Paper 1.20 through 1.21.
 
 ## Install
 
-1. Download or build CipherGate-1.0.2.jar.
+1. Download or build CipherGate-1.0.3.jar.
 2. Put it in your server's plugins/ directory.
 3. Start Paper once to create plugins/CipherGate/config.yml.
 4. Set a high-entropy pepper outside the plugin config:
@@ -46,20 +46,14 @@ Do not change a live pepper casually: existing password hashes use it, so changi
 
 ## Player flow
 
-On first join, CipherGate opens a small gate menu:
-
-- **Login** opens the secure-entry screen for an existing account.
-- **Register** starts a two-step password registration flow for a new account.
-- **Change Password** replaces Register after account creation and requires the current password first.
-- **Security status** shows the active authentication policy.
-
-Players can also use:
+On first join, CipherGate tells the player which command to use:
 
     /login <password>
     /register <password> <confirm>
+    /changepassword <old> <new> <confirm>
     /gate
 
-/register command arguments cannot include spaces because it needs two separate values. Use /gate if the password contains spaces. The gate keeps the entry out of chat; as with any visible text field, the player should still be mindful of shoulder surfing.
+/changepassword verifies the old password before it saves a new one. Passwords used in register and change-password commands cannot contain spaces because those commands require separate arguments. /gate only shows the right command; it no longer opens an anvil or takes XP.
 
 ## Administration
 
@@ -112,11 +106,11 @@ It never contains a plaintext password, a reversible encrypted password, an IP a
 
     mvn --batch-mode package
 
-The resulting JAR is written to target/CipherGate-1.0.2.jar. The GitHub Actions workflow verifies the same Maven build on Java 21.
+The resulting JAR is written to target/CipherGate-1.0.3.jar. The GitHub Actions workflow verifies the same Maven build on Java 21.
 
 ## Security notes
 
-No plugin can protect credentials if another plugin, proxy, host process, or command logger records user commands. Prefer /gate for player-facing password entry, review your other plugins, and restrict filesystem access to server operators. See [SECURITY.md](SECURITY.md) for reporting and deployment guidance.
+No plugin can protect credentials if another plugin, proxy, host process, or command logger records user commands. Review command logging and other plugins, and restrict filesystem access to server operators. See [SECURITY.md](SECURITY.md) for reporting and deployment guidance.
 
 ## License
 
