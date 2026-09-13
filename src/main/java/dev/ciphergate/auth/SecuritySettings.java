@@ -38,7 +38,7 @@ public record SecuritySettings(
 
         return new SecuritySettings(
                 config.getBoolean("authentication.allow-registration", true),
-                between(config.getInt("authentication.timeout-seconds", 90), 15, 600),
+                between(config.getInt("authentication.timeout-seconds", 300), 15, 300),
                 between(config.getInt("authentication.max-failed-attempts", 5), 3, 20),
                 between(config.getInt("authentication.lockout-minutes", 10), 1, 1440),
                 minimumLength,

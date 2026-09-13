@@ -4,7 +4,7 @@
 
 authentication:
   allow-registration: true
-  timeout-seconds: 90
+  timeout-seconds: 300
   max-failed-attempts: 5
   lockout-minutes: 10
 
