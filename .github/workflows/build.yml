@@ -23,6 +23,6 @@ jobs:
       - name: Upload plugin JAR
         uses: actions/upload-artifact@v4
         with:
-          name: CipherGate-1.0.3
-          path: target/CipherGate-1.0.3.jar
+          name: CipherGate
+          path: target/CipherGate-*.jar
           if-no-files-found: error

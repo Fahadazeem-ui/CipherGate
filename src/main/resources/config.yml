@@ -1,4 +1,4 @@
-# CipherGate 1.0.0
+# CipherGate 1.1.0
 # Never publish this file if you place a pepper in it. Prefer an environment
 # variable (CIPHERGATE_PEPPER) or JVM property (-Dciphergate.pepper=...) instead.
 

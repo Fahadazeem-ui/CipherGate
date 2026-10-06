@@ -75,6 +75,10 @@ public final class CipherGatePlugin extends JavaPlugin {
         return accounts;
     }
 
+    public SessionGuard sessions() {
+        return sessions;
+    }
+
     public AuthenticationService authentication() {
         return authentication;
     }

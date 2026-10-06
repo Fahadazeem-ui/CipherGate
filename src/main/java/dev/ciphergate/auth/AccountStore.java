@@ -13,8 +13,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
 /**
- * A compact UUID-keyed store. It deliberately contains no player names, IP
- * addresses, or recoverable passwords.
+ * A compact UUID-keyed store. It deliberately contains no player names or
+ * recoverable passwords. The only address it ever holds is the single
+ * optional IP lock a player or administrator configured for that account.
  */
 public final class AccountStore {
     private final JavaPlugin plugin;
@@ -49,7 +50,8 @@ public final class AccountStore {
                         Math.max(0, players.getLong(prefix + "created-at", 0)),
                         Math.max(0, players.getLong(prefix + "password-changed-at", 0)),
                         Math.max(0, players.getInt(prefix + "failed-attempts", 0)),
-                        Math.max(0, players.getLong(prefix + "locked-until", 0))
+                        Math.max(0, players.getLong(prefix + "locked-until", 0)),
+                        players.getString(prefix + "allowed-ip", "")
                 ));
             } catch (final IllegalArgumentException ignored) {
                 plugin.getLogger().warning("Ignored malformed account entry: " + value);
@@ -71,7 +73,7 @@ public final class AccountStore {
     }
 
     public boolean create(final UUID uuid, final String passwordHash, final long now) {
-        final boolean created = accounts.putIfAbsent(uuid, new Account(passwordHash, now, now, 0, 0)) == null;
+        final boolean created = accounts.putIfAbsent(uuid, new Account(passwordHash, now, now, 0, 0, "")) == null;
         if (created) {
             save();
         }
@@ -108,12 +110,36 @@ public final class AccountStore {
         return found[0];
     }
 
+    public boolean setAllowedIp(final UUID uuid, final String ip) {
+        final boolean[] found = {false};
+        accounts.computeIfPresent(uuid, (ignored, account) -> {
+            found[0] = true;
+            return account.withAllowedIp(ip);
+        });
+        if (found[0]) {
+            save();
+        }
+        return found[0];
+    }
+
+    public boolean clearAllowedIp(final UUID uuid) {
+        final boolean[] found = {false};
+        accounts.computeIfPresent(uuid, (ignored, account) -> {
+            found[0] = true;
+            return account.withoutAllowedIp();
+        });
+        if (found[0]) {
+            save();
+        }
+        return found[0];
+    }
+
     public void save() {
         synchronized (fileLock) {
             try {
                 Files.createDirectories(accountFile.toPath().getParent());
                 final YamlConfiguration yaml = new YamlConfiguration();
-                yaml.set("schema-version", 1);
+                yaml.set("schema-version", 2);
                 for (final Map.Entry<UUID, Account> entry : accounts.entrySet()) {
                     final String path = "players." + entry.getKey() + ".";
                     final Account account = entry.getValue();
@@ -122,6 +148,9 @@ public final class AccountStore {
                     yaml.set(path + "password-changed-at", account.passwordChangedAt());
                     yaml.set(path + "failed-attempts", account.failedAttempts());
                     yaml.set(path + "locked-until", account.lockedUntil());
+                    if (account.hasIpLock()) {
+                        yaml.set(path + "allowed-ip", account.allowedIp());
+                    }
                 }
                 yaml.save(accountFile);
             } catch (final IOException exception) {

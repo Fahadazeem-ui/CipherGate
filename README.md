@@ -16,9 +16,10 @@ Players arrive at a small **Cipher Gate**: a polished in-game menu with a secure
 - Per-account persistent failed-attempt counter and timed lockout
 - Password hashing runs off the main server thread
 - Every join requires authentication by default; there is no IP-based bypass to weaken the model
+- Optional per-account IP lock: `/cg ip <address>` pins an account to one address, and any other address is kicked on join — even with the correct password
 - A pre-auth sandbox blocks movement, chat, commands, damage, inventory access, interactions, item use, drops, pickups, attacks, and projectiles
 - 90-second authentication deadline (configurable)
-- UUID-only storage: no player name history, IP history, or plaintext passwords
+- UUID-only storage: no player name history, login IP history, or plaintext passwords — only the single optional IP lock an owner configures
 - Clear command-based login, registration, and old-password-confirmed password changes; no XP-costing anvil UI
 
 ## Compatibility
@@ -34,7 +35,7 @@ Paper lists Java 21 as the recommended Java version for Paper 1.20 through 1.21.
 
 ## Install
 
-1. Download or build CipherGate-1.0.3.jar.
+1. Download or build CipherGate-1.1.0.jar.
 2. Put it in your server's plugins/ directory.
 3. Start Paper once to create plugins/CipherGate/config.yml.
 4. Set a high-entropy pepper outside the plugin config:
@@ -55,18 +56,31 @@ On first join, CipherGate tells the player which command to use:
 
 /changepassword verifies the old password before it saves a new one. Passwords used in register and change-password commands cannot contain spaces because those commands require separate arguments. /gate only shows the right command; it no longer opens an anvil or takes XP.
 
+### IP lock (stops account sharing)
+
+After logging in, a player can pin their account to a single address:
+
+    /cg ip <address>   — lock this account to one IP (IPv4 or IPv6)
+    /cg ip             — show the lock and your current address
+    /cg ip clear       — remove the lock
+
+Once locked, any other address is kicked on join and cannot log in, even with the correct password. The lock never skips the password: the whitelisted address must still authenticate. Setting or clearing the lock requires a logged-in session, and CipherGate warns you if you lock the account to an address you are not currently connected from.
+
+> Notes: players with frequently changing (dynamic) IPs will need an admin to clear or update the lock. Behind a proxy (BungeeCord/Velocity) without IP forwarding, every player shares the proxy address, so the lock cannot tell players apart — enable proper IP forwarding first.
+
 ## Administration
 
     /ciphergate status
     /ciphergate reload
     /ciphergate unlock <uuid>
+    /ciphergate ip <uuid|player> [address|clear]
 
 | Permission | Default | Purpose |
 | --- | --- | --- |
 | ciphergate.use | Everyone | Login, registration, and gate commands |
-| ciphergate.admin | OP | Status, reload, and account unlock |
+| ciphergate.admin | OP | Status, reload, account unlock, and IP locks |
 
-CipherGate intentionally asks for a UUID when unlocking an account. Its account file does not retain player names.
+CipherGate intentionally asks for a UUID when unlocking an account. Its account file does not retain player names. The `ip` subcommand accepts either a UUID or an online player name: with no address it shows the lock, with an address it sets it, and with `clear` it removes it — use this to rescue players whose address changed. Works from console too.
 
 ## Configuration
 
@@ -99,14 +113,15 @@ plugins/CipherGate/accounts.yml contains only:
 - Versioned salted password hash
 - Creation/password-change timestamps
 - Failed-attempt count and lockout expiry
+- The single optional allowed IP, present only for accounts with an IP lock
 
-It never contains a plaintext password, a reversible encrypted password, an IP address, or a player name. Back up this file securely and never publish it.
+It never contains a plaintext password, a reversible encrypted password, a login IP history, or a player name. Back up this file securely and never publish it.
 
 ## Build from source
 
     mvn --batch-mode package
 
-The resulting JAR is written to target/CipherGate-1.0.3.jar. The GitHub Actions workflow verifies the same Maven build on Java 21.
+The resulting JAR is written to target/CipherGate-1.1.0.jar. The GitHub Actions workflow verifies the same Maven build on Java 21.
 
 ## Security notes
 

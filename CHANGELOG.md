@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.1.0
+
+- Added an optional per-account IP lock: `/cg ip <address>` pins an account to one IP, and any other address is kicked on join even with the correct password.
+- Added `/cg ip` (show lock and current address) and `/cg ip clear` (remove the lock). Setting or clearing requires a logged-in session.
+- Added `/ciphergate ip <uuid|player> [address|clear]` so administrators can view, set, or rescue an IP lock, including from console.
+- accounts.yml schema is now version 2 with an optional `allowed-ip` per account. Older files load without changes and stay unlocked until a lock is set.
+
 ## 1.0.3
 
 - Removed the unreliable anvil password interface, including its XP cost.

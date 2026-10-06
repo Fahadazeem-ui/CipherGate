@@ -37,6 +37,12 @@ public final class SessionGuard {
                     + minutesRemaining(account.lockedUntil(), now) + ".", NamedTextColor.RED));
             return;
         }
+        if (account != null && account.hasIpLock()
+                && !IpLocks.matches(account.allowedIp(), IpLocks.currentIp(player))) {
+            player.kick(Component.text("CipherGate: this account is locked to a different IP address. "
+                    + "Ask an administrator to reset it if your address changed.", NamedTextColor.RED));
+            return;
+        }
         if (account == null && !settings.allowRegistration()) {
             player.kick(Component.text("CipherGate: registration is currently closed.", NamedTextColor.RED));
             return;

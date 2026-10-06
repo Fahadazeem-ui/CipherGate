@@ -19,12 +19,12 @@ commands:
     usage: /changepassword <old> <new> <confirm>
     aliases: [changepass, cpass]
   gate:
-    description: Show the correct CipherGate command for your account state.
-    usage: /gate
+    description: Show the correct CipherGate command for your account state, or manage your IP lock.
+    usage: /gate [ip <address>|ip clear]
     aliases: [cg]
   ciphergate:
     description: CipherGate administration.
-    usage: /ciphergate <status|reload|unlock>
+    usage: /ciphergate <status|reload|unlock|ip>
     aliases: [cga]
 
 permissions:
