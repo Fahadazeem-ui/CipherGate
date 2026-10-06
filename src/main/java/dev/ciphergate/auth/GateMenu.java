@@ -49,6 +49,8 @@ public final class GateMenu {
         } else if (phase == SessionGuard.Phase.AUTHENTICATED) {
             player.sendMessage(Component.text("Change password with: ", NamedTextColor.AQUA)
                     .append(Component.text("/changepassword <old> <new> <confirm>", NamedTextColor.WHITE)));
+            player.sendMessage(Component.text("Lock this account to one address with: ", NamedTextColor.AQUA)
+                    .append(Component.text("/cg ip <address>", NamedTextColor.WHITE)));
         } else {
             player.sendMessage(Component.text("CipherGate is checking your last request.", NamedTextColor.GRAY));
         }

@@ -41,6 +41,15 @@ public final class AuthenticationService {
 
     /** Takes ownership of password and clears it after the asynchronous operation. */
     public void login(final Player player, final char[] password) {
+        final Account account = accounts.find(player.getUniqueId());
+        if (account != null && account.hasIpLock()
+                && !IpLocks.matches(account.allowedIp(), IpLocks.currentIp(player))) {
+            Arrays.fill(password, '\0');
+            player.kick(net.kyori.adventure.text.Component.text(
+                    "CipherGate: this account is locked to a different IP address.",
+                    net.kyori.adventure.text.format.NamedTextColor.RED));
+            return;
+        }
         final SessionGuard.Ticket ticket = sessions.beginVerification(player.getUniqueId(), SessionGuard.Phase.AWAITING_LOGIN);
         if (ticket == null) {
             Arrays.fill(password, '\0');
